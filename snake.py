@@ -1,4 +1,4 @@
-"""Snake, classic arcade game.
+"""Snake, classic  game.
 
 Exercises
 
@@ -8,11 +8,21 @@ Exercises
 4. Change the snake to respond to mouse clicks.
 """
 
-from random import randrange
-from turtle import *
+from random import randrange, choice
+from turtle import setup, hideturtle, tracer, listen, onkey, update, ontimer, clear, done
 
 from freegames import square, vector
 
+COLORS = ['blue', 'orange', 'purple', 'pink', 'orange']
+def pick_two_different_colors(palette):
+    if len(set(palette)) < 2:
+        raise ValueError("Palette must contain at least two different colors.")
+    snake_color = choice(palette)
+    remaining   = [c for c in palette if c != snake_color] 
+    food_color  = choice(remaining) 
+    return snake_color, food_color 
+
+SNAKE_COLOR, FOOD_COLOR = pick_two_different_colors(COLORS)
 food = vector(0, 0)
 snake = [vector(10, 0)]
 aim = vector(0, -10)
@@ -30,20 +40,14 @@ def inside(head):
 
 def move_food():
     """Move food randomly one step without leaving the window."""
-    options = [
-        vector(10, 0),
-        vector(-10, 0),
-        vector(0, 10),
-        vector(0, -10),
-    ]
+    directions = [vector(10,0), vector(-10,0), vector (0,10), vector (0,-10)]
+    step       = choice(directions)
+    new_x      = food.x + step.x
+    new_y      = food.y + step.y
 
-    move = options[randrange(4)]
-    new_food = food.copy()
-    new_food.move(move)
-
-    if inside(new_food):
-        food.x = new_food.x
-        food.y = new_food.y
+    if -200 < new_x < 190 and -200 < new_y < 190:
+        food.x = new_x
+        food.y = new_y
 
 def move():
     """Move snake forward one segment."""
@@ -63,14 +67,15 @@ def move():
         food.y = randrange(-15, 15) * 10
     else:
         snake.pop(0)
-    
-        move_food()
+
+    move_food()
+
     clear()
 
     for body in snake:
-        square(body.x, body.y, 9, 'black')
+        square(body.x, body.y, 9, SNAKE_COLOR)
 
-    square(food.x, food.y, 9, 'green')
+    square(food.x, food.y, 9, FOOD_COLOR)
     update()
     ontimer(move, 100)
 
